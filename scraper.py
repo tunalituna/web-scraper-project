@@ -1,16 +1,24 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 
 def main():
-    url = 'https://example.com'  # Replace this with the URL of the website you want to scrape
-    response = requests.get(url)
+    url = input("Enter the URL to scrape: ")
+    
+    if not url:
+        print("URL is required.")
+        return
 
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, 'html.parser')
-        title = soup.title.string.strip()  # Extract the page title
-        print(f"Page Title: {title}")
-    else:
-        print("Failed to fetch the page.")
+    try:
+        response = requests.get(url, timeout=10, headers={"User-Agent": "MyScraper"})
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print("Failed to fetch the page:", e)
+        return
+
+    soup = BeautifulSoup(response.content, 'html.parser')
+    title = soup.title.get_text(strip=True)
+    print(f"Page Title: {title}")
 
 if __name__ == "__main__":
     main()
